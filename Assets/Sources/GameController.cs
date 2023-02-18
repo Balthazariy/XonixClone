@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.Game
+namespace Balthazatiy.XonixClone
 {
-    class GameController : MonoBehaviour
+    public class GameController : MonoBehaviour
     {
         public static GameController Instance;
         public Texture2D Texture;
@@ -20,14 +17,14 @@ namespace Assets.Scripts.Game
         public bool TimeIsUp;
 
         #region UI_ELEMENTS
-        public Text Level;
-        public Text Lives;
-        public Text Fill;
-        public Text Timer;
+        public TextMeshProUGUI Level;
+        public TextMeshProUGUI Lives;
+        public TextMeshProUGUI Fill;
+        public TextMeshProUGUI Timer;
 
-        public RectTransform GameOver;
-        public RectTransform PauseButton;
-        public RectTransform PlayButton;
+        public GameObject GameOver;
+        public Button PauseButton;
+        public Button PlayButton;
         #endregion
 
         #region SWIPE_DETECTION
@@ -101,7 +98,7 @@ namespace Assets.Scripts.Game
 #if UNITY_ANDROID
             if (!GameXonix.gameOverOrPause.IsPaused() && !GameXonix.gameOverOrPause.IsGameOver())
             {
-                if(Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0))
                 {
                     _touchPosition = Input.mousePosition;
                 }
@@ -109,7 +106,7 @@ namespace Assets.Scripts.Game
                 if (Input.GetMouseButtonUp(0))
                 {
                     var deltaSwipe = _touchPosition - Input.mousePosition;
-                    if(Mathf.Abs(deltaSwipe.x) > _swipeResistanceX)
+                    if (Mathf.Abs(deltaSwipe.x) > _swipeResistanceX)
                     {
                         //Swipe on the X axis
                         GameXonix.xonix.SetDirection((deltaSwipe.x < 0) ? GameXonix.RIGHT : GameXonix.LEFT);
@@ -130,7 +127,7 @@ namespace Assets.Scripts.Game
             if ((_levelTime > 0))
             {
                 _levelTime -= Time.deltaTime;
-                Timer.text = " " + Mathf.Round(_levelTime).ToString();
+                Timer.text = "Time left: " + Mathf.Round(_levelTime).ToString();
             }
             else
                 TimeIsUp = true;
@@ -145,24 +142,30 @@ namespace Assets.Scripts.Game
         {
             GameXonix.gameOverOrPause.OnPause();
             if (GameXonix.gameOverOrPause.IsPaused())
-                PauseButton.GetChild(0).GetComponent<Text>().text = "Play";
+            {
+                PauseButton.gameObject.SetActive(false);
+                PlayButton.gameObject.SetActive(true);
+            }
             else
-                PauseButton.GetChild(0).GetComponent<Text>().text = "Pause";
+            {
+                PauseButton.gameObject.SetActive(true);
+                PlayButton.gameObject.SetActive(false);
+            }
         }
 
         public void SetLivesCount(int live)
         {
-            Lives.text = live.ToString();
+            Lives.text = "HP: " + live.ToString();
         }
 
         public void SetFillAmount(int fillArea)
         {
-            Fill.text = Mathf.Round(fillArea).ToString() + " %";
+            Fill.text = "Fill: " + Mathf.Round(fillArea).ToString() + " %";
         }
 
         public void SetLevelNum(int level)
         {
-            Level.text = level.ToString();
+            Level.text = "Level: " + level.ToString();
         }
     }
 }
